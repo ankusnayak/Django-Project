@@ -37,31 +37,42 @@ def index(request):
     # return render(request,'orders/order.html')
 
 
-def validateCustomer(customer):
-    error_message = {}
-        
-    if (not customer.firstName):
-        error_message['firstName'] = "First Name Required!!"
-    elif len(customer.firstName) < 4:
-            error_message['firstName'] = 'First Name must be 4 char long'
-    elif not customer.lastName:
-        error_message['lastName'] = "Last Name Required"
-    elif len(customer.lastName) < 2:
-        error_message['lastName'] = 'Last Name must be 2 char long'
-    elif not customer.phone:
-        error_message['phone'] = "Phone Number Required"
-    elif len(customer.phone) < 10:
-        error_message['phone'] = "Phone Number Must be 10 digit long"
-    elif not customer.email:
-        error_message['email'] = "Email Required" 
-    elif customer.isExists():
-        error_message['emailvalidation'] = 'Email already exists'
 
-    return error_message    
 
-def registerCustomer(request):
-        
-        #collect of data from form submit form
+
+
+
+
+
+class Signup(View):
+
+    def validateCustomer(self, customer):
+        error_message = {}
+    
+        if (not customer.firstName):
+            error_message['firstName'] = "First Name Required!!"
+        elif len(customer.firstName) < 4:
+                error_message['firstName'] = 'First Name must be 4 char long'
+        elif not customer.lastName:
+            error_message['lastName'] = "Last Name Required"
+        elif len(customer.lastName) < 2:
+            error_message['lastName'] = 'Last Name must be 2 char long'
+        elif not customer.phone:
+            error_message['phone'] = "Phone Number Required"
+        elif len(customer.phone) < 10:
+            error_message['phone'] = "Phone Number Must be 10 digit long"
+        elif not customer.email:
+            error_message['email'] = "Email Required" 
+        elif customer.isExists():
+            error_message['emailvalidation'] = 'Email already exists'
+
+        return error_message
+    
+
+    def get(self, request):
+        return render(request, 'signup.html')
+    def post(self, request):
+                #collect of data from form submit form
         #request.POST.get('key')
         postData = request.POST
         firstName = postData.get('firstname')
@@ -87,7 +98,7 @@ def registerCustomer(request):
 
         #validation -check for any validation error for the new customer
         error_message = {}
-        error_message=validateCustomer(customer)
+        error_message=self.validateCustomer(customer)
         
 
         #saving
@@ -108,19 +119,9 @@ def registerCustomer(request):
         
         return redirect('homepage')
     
-
-
-
-
-def signup(request):
-    if request.method == 'GET':
-        return render(request, 'signup.html')
-    else:
-        #post method..then we get user information and we  need to register them in the database so call the register customer method
-        return registerCustomer(request)  
-
-
-
+    
+   
+        
 
 #class based view            
 class Login(View):
@@ -132,8 +133,11 @@ class Login(View):
         email = request.POST.get('email')
         #password send by the user
         password = request.POST.get('password')
+
+        print(email,password)
         #check if customer exist or not
         customer = Customer.getCustomerByEmail(email)
+        print(customer)
         error_message=None
         if customer:
             #check customer
@@ -144,6 +148,7 @@ class Login(View):
                 error_message='Wrong email or password'
         else:
             error_message='Wrong email or password'
+        
         return render(request,'login.html',{'error':error_message}) 
         
         
