@@ -11,7 +11,7 @@ from .models.category import Category
 from .models.customer import Customer
 
 
-
+from django.views import View
 
 
 ######################################### Create your views here ############################################################
@@ -121,28 +121,29 @@ def signup(request):
 
 
 
-def login(request):
-    if request.method == 'GET':
+
+#class based view            
+class Login(View):
+    #define get method for the login
+    def get(self, request):
         return render(request, 'login.html')
-    else:
-        #we get value from the form as a dictionary
+    def post(self, request):
+        #we submit the login form in which two fields are there email and password and after submit Login Post method is called and from this post method we fetch the value from the submitte section
         email = request.POST.get('email')
+        #password send by the user
         password = request.POST.get('password')
-        
+        #check if customer exist or not
         customer = Customer.getCustomerByEmail(email)
-        error_messag=None
+        error_message=None
         if customer:
-            #cutomer exists for that particular email id but now check for the password
-            flag = check_password(password, customer.password)
-            if flag:
-                #email and password both are fine so redirect to the home page
+            #check customer
+            temp = check_password(password, customer.password)
+            if temp:
                 return redirect('homepage')
             else:
-                error_messag = 'Email or Password invalid!'
-
+                error_message='Wrong email or password'
         else:
-            #email is wrong
-            error_messag = 'Email or Password invalid!'
-        return render(request,'login.html',{'error':error_messag})
-
-            
+            error_message='Wrong email or password'
+        return render(request,'login.html',{'error':error_message}) 
+        
+        
