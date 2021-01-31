@@ -1,9 +1,10 @@
 from django.contrib import admin
 from django.urls import path
-from .views import index , Signup ,Login
+from .views import home,login,signup
+
 urlpatterns = [
     #if "" string is empty then call the index method which prestent in views file
-    path('', index,name='homepage'),
-    path('signup', Signup.as_view()),
-    path('login',Login.as_view())
+    path('', home.index,name='homepage'),
+    path('signup', signup.Signup.as_view(),name='signup'),
+    path('login',login.Login.as_view(),name='login')
 ]
